@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LC-3_Simulator", "LC-3_Simulator\LC-3_Simulator.csproj", "{3B58B7E3-9FDE-4EAB-9399-96737268072B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B58B7E3-9FDE-4EAB-9399-96737268072B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B58B7E3-9FDE-4EAB-9399-96737268072B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B58B7E3-9FDE-4EAB-9399-96737268072B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B58B7E3-9FDE-4EAB-9399-96737268072B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F9A67634-55E7-46DC-891D-FAFE3F62C312}
+	EndGlobalSection
+EndGlobal
