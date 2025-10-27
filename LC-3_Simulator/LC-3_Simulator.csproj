@@ -2,14 +2,61 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+	<UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>LC_3_Simulator</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+	<PublishSingleFile>true</PublishSingleFile>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="unvell.ReoGridWPF.dll" Version="3.0.0" />
+    <None Remove="image\binary.png" />
+    <None Remove="image\close.png" />
+    <None Remove="image\code.png" />
+    <None Remove="image\compile.png" />
+    <None Remove="image\continue.png" />
+    <None Remove="image\document.png" />
+    <None Remove="image\folder.png" />
+    <None Remove="image\maximize.png" />
+    <None Remove="image\minimize.png" />
+    <None Remove="image\os.png" />
+    <None Remove="image\reload.png" />
+    <None Remove="image\reset.png" />
+    <None Remove="image\step_into.png" />
+    <None Remove="image\step_over.png" />
+    <None Remove="image\stop.png" />
+    <None Remove="os\lc3os.obj" />
+    <None Remove="os\lc3os.sym" />
+    <None Remove="syntax\lc-3.xshd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.3.0.90" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="image\binary.png" />
+    <Resource Include="image\close.png" />
+    <Resource Include="image\code.png" />
+    <Resource Include="image\compile.png" />
+    <Resource Include="image\continue.png" />
+    <Resource Include="image\document.png" />
+    <Resource Include="image\folder.png" />
+    <Resource Include="image\maximize.png" />
+    <Resource Include="image\minimize.png" />
+    <Resource Include="image\os.png" />
+    <Resource Include="image\reload.png" />
+    <Resource Include="image\reset.png" />
+    <Resource Include="image\step_into.png" />
+    <Resource Include="image\step_over.png" />
+    <Resource Include="image\stop.png" />
+    <EmbeddedResource Include="os\lc3os.obj" />
+    <EmbeddedResource Include="os\lc3os.sym" />
+    <EmbeddedResource Include="syntax\lc-3.xshd">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

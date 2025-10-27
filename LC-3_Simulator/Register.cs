@@ -77,6 +77,11 @@ namespace LC_3_Simulator
             WritePC(ReadPC() + 1);
         }
 
+        public int ReadCC()
+        {
+            return registerList[9];
+        }
+
         public void WriteCC(int value)
         {
             value = Utils.SignExtend(value, 16);

@@ -1,11 +1,16 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace LC_3_Simulator
 {
@@ -38,7 +43,7 @@ namespace LC_3_Simulator
             return memory[address & 0xFFFF];
         }
 
-        public void WriteMemory(int address, int data, bool isInstruction=false, Symbol? symbol=null)
+        public void WriteMemory(int address, int data, Symbol? symbol=null, WriteableBitmap? image=null)
         {
             if (symbol == null)
             {
@@ -49,24 +54,34 @@ namespace LC_3_Simulator
             address = address & 0xFFFF;
             // 更新内存和表 update memory and grid
             memory[address] = data;
-            memoryGrid[address].Address = "x" + Utils.Int16ToString(address) + " " + symbol.GetSymbol(address);
+            memoryGrid[address].Address = "x" + Utils.Int16ToString(address) + " " + symbol.GetSymbol(address, false);
             memoryGrid[address].Value = "x" + Utils.Int16ToString(data);
             // 更新描述 update description
-            if (isInstruction)
+            Instruction instruction = new Instruction(data, symbol, address + 1);
+            memoryGrid[address].Description = instruction.GetDescription(symbol.IsInstruction(address));
+            // 更新图像 update image
+            if (image != null && address >=0xC000 && address <= 0xFDFF)
             {
-                Instruction instruction = new Instruction(data, symbol, address + 1);
-                memoryGrid[address].Description = instruction.GetDescription();
-            }
-            else
-            {
-                memoryGrid[address].Description = ".FILL x" + Utils.Int16ToString(data);
-            }
+                General.ioImageList[General.tabIndex].Dispatcher.Invoke(new Action(() =>
+                {
+                    DrawImage(image);
+                }));
+                
+            }            
         }
 
         public void ReadObjFile(string filename, Register register, Symbol symbol)
         {
+            using (Stream stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+            {
+                ReadObjFile(stream, register, symbol);
+            }
+        }
+
+        public void ReadObjFile(Stream stream, Register register, Symbol symbol)
+        {
             // 打开文件 open file
-            BinaryReader br = new BinaryReader(new FileStream(filename, FileMode.Open, FileAccess.Read));
+            BinaryReader br = new BinaryReader(stream);
 
             // 读取起始地址 read origin address
             byte[] data = br.ReadBytes(2);
@@ -83,12 +98,66 @@ namespace LC_3_Simulator
                 temp = new byte[4] { data[1], data[0], 0, 0 };
                 value = BitConverter.ToInt32(temp);
                 // 写入内存 write to memory
-                WriteMemory(address, value, symbol.IsInstruction(address), symbol);
+                WriteMemory(address, value, symbol);
                 address++;
             }
 
             // 关闭文件
             br.Close();
         }
+
+        public void DrawImage(WriteableBitmap image)
+        {
+            unsafe
+            {
+                image.Lock();
+                byte[] data = new byte[128 * 124 * 3];
+
+                for (int x = 0; x < image.Width; x++)
+                {
+                    for (int y = 0; y < image.Height; y++)
+                    {
+                        int address = 0xC000 + y * 0x80 + x;
+                        int color = memory[address];
+                        int red = (int)((double)((color >> 10) & 0x001F) / 31.0 * 255.0);
+                        int green = (int)((double)((color >> 5) & 0x001F) / 31.0 * 255.0);
+                        int blue = (int)((double)(color & 0x001F) / 31.0 * 255.0);
+                        data[(y * (int)image.Width + x) * 3] = (byte)blue;
+                        data[(y * (int)image.Width + x) * 3 + 1] = (byte)green;
+                        data[(y * (int)image.Width + x) * 3 + 2] = (byte)red;
+                    }
+                }
+
+                Marshal.Copy(data, 0, General.controlList[General.tabIndex].image.BackBuffer, data.Length);
+                image.AddDirtyRect(new System.Windows.Int32Rect(0, 0, 128, 124));
+                image.Unlock();
+            }
+        }
+        
+        //public void DrawImage(WriteableBitmap image)
+        //{
+        //    image.Lock();
+        //    int width = (int)image.Width;
+        //    int height = (int)image.Height;
+        //    System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(width, height, image.BackBufferStride, System.Drawing.Imaging.PixelFormat.Format24bppRgb, image.BackBuffer);
+
+        //    for (int x = 0; x < width; x++)
+        //    {
+        //        for (int y = 0; y < height; y++)
+        //        {
+        //            int address = 0xC000 + y * 0x80 + x;
+        //            int color = memory[address];
+        //            int red = (int)((double)((color >> 10) & 0x001F) / 31.0 * 255.0);
+        //            int green = (int)((double)((color >> 5) & 0x001F) / 31.0 * 255.0);
+        //            int blue = (int)((double)(color & 0x001F) / 31.0 * 255.0);
+        //            bitmap.SetPixel(x, y, System.Drawing.Color.FromArgb(red, green, blue));
+        //        }
+        //    }
+        //    bitmap.Dispose();
+        //    bitmap = null;
+
+        //    image.AddDirtyRect(new Int32Rect(0, 0, width, height));
+        //    image.Unlock();
+        //}
     }
 }

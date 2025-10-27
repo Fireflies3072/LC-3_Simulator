@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.AvalonEdit.Highlighting;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -7,8 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using unvell.ReoGrid;
-using unvell.ReoGrid.IO.OpenXML.Schema;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+using System.Text.Unicode;
+using System.Runtime.InteropServices;
 
 namespace LC_3_Simulator
 {
@@ -16,42 +22,58 @@ namespace LC_3_Simulator
     {
         private Memory memory;
         private Register register;
+        public WriteableBitmap image;
         private DataGrid dgMemory;
         private DataGrid dgRegister;
+        private Image ioImage;
+        private TextBlock ioText;
         
         private Symbol symbol;
 
-        public Control(DataGrid dgMemory, DataGrid dgRegister)
+        public Control(DataGrid dgMemory, DataGrid dgRegister, Image ioImage, TextBlock ioText)
         {
             // 保存参数 save parameters
             this.dgMemory = dgMemory;
             this.dgRegister = dgRegister;
-            
-            reset();
+            this.ioImage = ioImage;
+            this.ioText = ioText;
+
+            Reset();
         }
 
-        public bool ReadFile(string filename)
+        public void ReadFile(string filename)
         {
-            try
+            // 读取同名符号文件 check symbol file with the same name
+            symbol.ReadSymFile(Path.ChangeExtension(filename, ".sym"));
+            // 读取目标文件 read object file
+            memory.ReadObjFile(filename, register, symbol);
+
+            // 显示在表格中 show in grid
+            dgMemory.SelectedIndex = register.ReadPC();
+            dgMemory.ScrollIntoView(dgMemory.Items.GetItemAt(dgMemory.SelectedIndex + 15));
+            dgMemory.UpdateLayout();
+        }
+
+        public void ReadOS()
+        {
+            // 读取同名符号文件 check symbol file with the same name
+            using (Stream stream = General.assembly.GetManifestResourceStream("LC_3_Simulator.os.lc3os.sym"))
             {
-                reset();
-
-                // 读取同名符号文件 check symbol file with the same name
-                symbol.ReadSymFile(Path.ChangeExtension(filename, ".sym"));
-                // 读取目标文件 read object file
-                memory.ReadObjFile(filename, register, symbol);
-
-                // 显示在表格中 show in grid
-                dgMemory.SelectedIndex = register.ReadPC();
-                dgMemory.ScrollIntoView(dgMemory.Items.GetItemAt(dgMemory.SelectedIndex + 15));
-                dgMemory.UpdateLayout();
+                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
+                {
+                    string text = reader.ReadToEnd();
+                    symbol.ReadSymText(text);
+                }
             }
-            catch (Exception ex)
+            // 读取目标文件 read object file
+            using (Stream stream = General.assembly.GetManifestResourceStream("LC_3_Simulator.os.lc3os.obj"))
             {
-                return false;
+                memory.ReadObjFile(stream, register, symbol);
             }
-
-            return true;
+            // 显示在表格中 show in grid
+            dgMemory.SelectedIndex = register.ReadPC();
+            dgMemory.ScrollIntoView(dgMemory.Items.GetItemAt(dgMemory.SelectedIndex + 15));
+            dgMemory.UpdateLayout();
         }
 
         public void Step()
@@ -64,26 +86,36 @@ namespace LC_3_Simulator
             Instruction instruction = new Instruction(data, symbol, register.ReadPC());
 
             // 执行指令 execute instruction
-            if (!instruction.Execute(memory, register))
+            if (!instruction.Execute(memory, register, image, ioText))
             {
                 MessageBox.Show("Not a valid instruction", "Error message", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+        }
+
+        public void UpdateUI()
+        {
             // 更新表 update grid
             dgMemory.SelectedIndex = register.ReadPC();
             dgMemory.Items.Refresh();
             dgRegister.Items.Refresh();
         }
 
-        public void reset()
+        public void Reset()
         {
             // 初始化内存和寄存器 initialize memory and register
             memory = new Memory();
             dgMemory.ItemsSource = memory.memoryGrid;
             register = new Register();
             dgRegister.ItemsSource = register.registerGrid;
+            // 初始化输出图像 initialize output image
+            image = new WriteableBitmap(128, 124, 96, 96, PixelFormats.Bgr24, null);
+            ioImage.Source = image;
+            // 初始化控制台文字 initialze console text
+            ioText.Text = "";
+            ioText.IsEnabled = false;
 
-            // 初始化符号
+            // 初始化符号 initialize symbol
             symbol = new Symbol();
         }
     }

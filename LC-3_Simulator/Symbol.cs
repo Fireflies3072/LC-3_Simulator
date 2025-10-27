@@ -28,15 +28,21 @@ namespace LC_3_Simulator
                 return;
             }
 
-            // 打开文件 open file
-            StreamReader sr = new StreamReader(new FileStream(filename, FileMode.Open, FileAccess.Read), Encoding.UTF8);
+            // 读取文件 read file
+            string text = File.ReadAllText(filename, Encoding.UTF8);
+            ReadSymText(text);
+        }
 
+        public void ReadSymText(string text)
+        {
             // 解析文件 parse file
-            string line;
             bool start = false;
-            while ((line = sr.ReadLine()) != null)
+            string[] lineList = text.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string line;
+            for (int i = 0; i < lineList.Length; i++)
             {
                 // 寻找开始的行 find starting line
+                line = lineList[i];
                 if (line.Contains("----"))
                 {
                     start = true;
@@ -63,12 +69,9 @@ namespace LC_3_Simulator
                     }
                 }
             }
-
-            // 关闭文件 close file
-            sr.Close();
         }
 
-        public string GetSymbol(int address, bool returnAddress=false)
+        public string GetSymbol(int address, bool returnAddress=true)
         {
             string strAddress = Utils.Int16ToString(address);
             if (symbolList.ContainsKey(strAddress))

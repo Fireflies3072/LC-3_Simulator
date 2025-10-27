@@ -1,0 +1,60 @@
+<SyntaxDefinition name="LC-3"
+        xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+    <Color name="Comment" foreground="Green" />
+    <Color name="String" foreground="Blue" />
+
+    <!-- This is the main ruleset. -->
+    <RuleSet>
+        <Span color="Comment" begin=";" />
+
+        <Span color="String">
+            <Begin>"</Begin>
+            <End>"</End>
+            <RuleSet>
+                <!-- nested span for escape sequences -->
+                <Span begin="\\" end="." />
+            </RuleSet>
+        </Span>
+
+        <Keywords fontWeight="bold" foreground="Blue">
+            <Word>MOV</Word>
+            <Word>ADD</Word>
+            <Word>NOT</Word>
+            <Word>LD</Word>
+            <Word>LDI</Word>
+            <Word>LDR</Word>
+            <Word>LEA</Word>
+            <Word>ST</Word>
+            <Word>STI</Word>
+            <Word>STR</Word>
+            <Word>BR</Word>
+            <Word>BRn</Word>
+            <Word>BRz</Word>
+            <Word>BRp</Word>
+            <Word>BRnz</Word>
+            <Word>BRnp</Word>
+            <Word>BRzp</Word>
+            <Word>BRnzp</Word>
+            <Word>JMP</Word>
+            <Word>JSR</Word>
+            <Word>JSRR</Word>
+            <Word>RET</Word>
+            <Word>RTI</Word>
+            <Word>TRAP</Word>
+        </Keywords>
+
+        <Keywords fontWeight="bold" foreground="DarkBlue">
+            <Word>GETC</Word>
+            <Word>OUT</Word>
+            <Word>PUTS</Word>
+            <Word>IN</Word>
+            <Word>PUTSP</Word>
+            <Word>HALT</Word>
+        </Keywords>
+
+        <!-- Digits -->
+        <Rule foreground="DarkRed">
+            [#x]?[0-9A-F]+
+        </Rule>
+    </RuleSet>
+</SyntaxDefinition>
