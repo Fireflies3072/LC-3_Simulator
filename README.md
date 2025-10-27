@@ -13,15 +13,15 @@ An educational LC-3 computer simulator with a modern GUI. Load LC-3 object/assem
 
 **Main interface**
 
-![](https://fireflies3072.blob.core.windows.net/blog/images/2024-01-lc3-simulator/gui1.jpg)
+![](https://fireflies3072.blob.core.windows.net/blog/images/2023-11-lc3-simulator/gui1.jpg)
 
 **Write code file**
 
-![](https://fireflies3072.blob.core.windows.net/blog/images/2024-01-lc3-simulator/gui2.jpg)
+![](https://fireflies3072.blob.core.windows.net/blog/images/2023-11-lc3-simulator/gui2.jpg)
 
 **Step over each instruction**
 
-![](https://fireflies3072.blob.core.windows.net/blog/images/2024-01-lc3-simulator/gui3.jpg)
+![](https://fireflies3072.blob.core.windows.net/blog/images/2023-11-lc3-simulator/gui3.jpg)
 
 ## LC-3 Instruction Set Overview
 Short, practical descriptions of the core LC-3 instructions. For brevity, `SEXT` means sign-extend and all arithmetic is 16‑bit.
